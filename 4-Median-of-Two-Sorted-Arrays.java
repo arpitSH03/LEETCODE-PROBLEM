@@ -1,82 +1,49 @@
 class Solution {
-    // Length of first array
-    private int firstArrayLength;
-    // Length of second array
-    private int secondArrayLength;
-    // Reference to first sorted array
-    private int[] firstArray;
-    // Reference to second sorted array
-    private int[] secondArray;
-
-    /**
-     * Finds the median of two sorted arrays using binary search approach.
-     * The median is found by finding the (n+1)/2-th and (n+2)/2-th smallest elements
-     * and averaging them, which handles both odd and even total lengths.
-     *
-     * @param nums1 First sorted array
-     * @param nums2 Second sorted array
-     * @return The median value of the combined sorted arrays
-     */
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-        // Initialize instance variables
-        firstArrayLength = nums1.length;
-        secondArrayLength = nums2.length;
-        this.firstArray = nums1;
-        this.secondArray = nums2;
-
-        // For odd total length: both positions point to the same middle element
-        // For even total length: positions point to the two middle elements
-        int leftMedianElement = findKthSmallest(0, 0, (firstArrayLength + secondArrayLength + 1) / 2);
-        int rightMedianElement = findKthSmallest(0, 0, (firstArrayLength + secondArrayLength + 2) / 2);
-
-        // Average the two middle elements (same element for odd length)
-        return (leftMedianElement + rightMedianElement) / 2.0;
-    }
-
-    /**
-     * Recursively finds the k-th smallest element in two sorted arrays.
-     * Uses binary search by eliminating k/2 elements at each step.
-     *
-     * @param firstArrayStartIndex Starting index in the first array
-     * @param secondArrayStartIndex Starting index in the second array
-     * @param k The position (1-indexed) of the element to find
-     * @return The k-th smallest element
-     */
-    private int findKthSmallest(int firstArrayStartIndex, int secondArrayStartIndex, int k) {
-      
-        if (firstArrayStartIndex >= firstArrayLength) {
-            return secondArray[secondArrayStartIndex + k - 1];
+        // Ensure nums1 is the smaller array to optimize the binary search range
+        if (nums1.length > nums2.length) {
+            return findMedianSortedArrays(nums2, nums1);
         }
-
-      
-        if (secondArrayStartIndex >= secondArrayLength) {
-            return firstArray[firstArrayStartIndex + k - 1];
-        }
-
-       
-        if (k == 1) {
-            return Math.min(firstArray[firstArrayStartIndex], secondArray[secondArrayStartIndex]);
-        }
-
         
-        int halfK = k / 2;
-
-        int firstArrayMidValue = (firstArrayStartIndex + halfK - 1 < firstArrayLength)
-            ? firstArray[firstArrayStartIndex + halfK - 1]
-            : Integer.MAX_VALUE;
-
+        int m = nums1.length;
+        int n = nums2.length;
+        int low = 0;
+        int high = m;
         
-        int secondArrayMidValue = (secondArrayStartIndex + halfK - 1 < secondArrayLength)
-            ? secondArray[secondArrayStartIndex + halfK - 1]
-            : Integer.MAX_VALUE;
-
-        
-        if (firstArrayMidValue < secondArrayMidValue) {
+        while (low <= high) {
+            int partitionX = (low + high) / 2;
+            int partitionY = (m + n + 1) / 2 - partitionX;
             
-            return findKthSmallest(firstArrayStartIndex + halfK, secondArrayStartIndex, k - halfK);
-        } else {
-           
-            return findKthSmallest(firstArrayStartIndex, secondArrayStartIndex + halfK, k - halfK);
+            // If partitionX is 0, nothing is on the left side of nums1. Use -INF
+            // If partitionX is m, nothing is on the right side of nums1. Use +INF
+            int maxLeftX = (partitionX == 0) ? Integer.MIN_VALUE : nums1[partitionX - 1];
+            int minRightX = (partitionX == m) ? Integer.MAX_VALUE : nums1[partitionX];
+            
+            int maxLeftY = (partitionY == 0) ? Integer.MIN_VALUE : nums2[partitionY - 1];
+            int minRightY = (partitionY == n) ? Integer.MAX_VALUE : nums2[partitionY];
+            
+            // Check if we found the correct partition
+            if (maxLeftX <= minRightY && maxLeftY <= minRightX) {
+                // If the total number of elements is odd
+                if ((m + n) % 2 != 0) {
+                    return Math.max(maxLeftX, maxLeftY);
+                } 
+                // If the total number of elements is even
+                else {
+                    return (Math.max(maxLeftX, maxLeftY) + Math.min(minRightX, minRightY)) / 2.0;
+                }
+            } 
+            // We are too far right in nums1, need to move left
+            else if (maxLeftX > minRightY) {
+                high = partitionX - 1;
+            } 
+            // We are too far left in nums1, need to move right
+            else {
+                low = partitionX + 1;
+            }
         }
+        
+        // Return 0.0 if the input arrays are not sorted or invalid (per problem constraints, this won't be reached)
+        return 0.0;
     }
 }
