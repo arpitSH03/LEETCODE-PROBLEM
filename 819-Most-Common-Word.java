@@ -1,4 +1,9 @@
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Solution {
     // Regex pattern to match sequences of lowercase letters
@@ -28,6 +33,7 @@ class Solution {
             wordFrequencyMap.put(currentWord, wordFrequencyMap.getOrDefault(currentWord, 0) + 1);
         }
       
+        // Find the word with the maximum frequency
         int maxFrequency = Integer.MIN_VALUE;
         String mostCommonWord = null;
       
