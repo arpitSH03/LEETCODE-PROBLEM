@@ -17,7 +17,7 @@ class Solution {
                 
                 if (s.charAt(i) == s.charAt(j)) {
                    
-                    dp[i][j] = dp[i + 1][j - 2];
+                    dp[i][j] = dp[i + 1][j - 1];
                   
                     
                     if (dp[i][j] && maxLength < j - i + 1) {
