@@ -1,43 +1,41 @@
 class Solution {
     public int minimumOperations(int[] nums) {
         int n = nums.length;
-        int idx = -1;
+        int zero = -1;
+        
+        // Find the index of 0
         for (int i = 0; i < n; i++) {
             if (nums[i] == 0) {
-                idx = i;
+                zero = i;
                 break;
             }
         }
         
         boolean rightIncreasing = true;
-        for (int i = 0; i < n; i++) {
-            if (nums[(idx + i) % n] != i) {
-                rightIncreasing = false;
-                break;
-            }
-        }
-        
         boolean leftIncreasing = true;
+        
+        // Verify both directions around 0
         for (int i = 0; i < n; i++) {
-            if (nums[(idx - i + n) % n] != i) {
+            if (nums[(zero + i) % n] != i) {
+                rightIncreasing = false;
+            }
+            if (nums[(zero - i + n) % n] != i) {
                 leftIncreasing = false;
-                break;
             }
         }
         
         int minOps = Integer.MAX_VALUE;
         
         if (rightIncreasing) {
-            minOps = Math.min(minOps, idx);
-            minOps = Math.min(minOps, n - idx + 2);
+            minOps = Math.min(minOps, zero);
+            minOps = Math.min(minOps, n - zero + 2);
         }
         
         if (leftIncreasing) {
-            minOps = Math.min(minOps, idx + 2);
-            minOps = Math.min(minOps, n - idx);
+            minOps = Math.min(minOps, zero + 2);
+            minOps = Math.min(minOps, n - zero);
         }
         
         return minOps == Integer.MAX_VALUE ? -1 : minOps;
     }
 }
-
