@@ -1,41 +1,44 @@
+
 class Solution {
-    public int minimumOperations(int[] nums) {
+    public int minOperations(int[] nums) {
         int n = nums.length;
-        int zero = -1;
-        
-        // Find the index of 0
+        int zero = 0;
+
+        // Find the position of 0
         for (int i = 0; i < n; i++) {
             if (nums[i] == 0) {
                 zero = i;
                 break;
             }
         }
-        
-        boolean rightIncreasing = true;
-        boolean leftIncreasing = true;
-        
-        // Verify both directions around 0
-        for (int i = 0; i < n; i++) {
-            if (nums[(zero + i) % n] != i) {
-                rightIncreasing = false;
+
+        int ans = Integer.MAX_VALUE;
+
+        // Check both directions from 0
+        for (int step : new int[]{1, -1}) {
+            boolean valid = true;
+
+            for (int i = 1; i < n; i++) {
+                int prev = (zero + (i - 1) * step + n) % n;
+                int curr = (zero + i * step + n) % n;
+
+                if (nums[prev] > nums[curr]) {
+                    valid = false;
+                    break;
+                }
             }
-            if (nums[(zero - i + n) % n] != i) {
-                leftIncreasing = false;
+
+            if (valid) {
+                if (step == 1) {
+                    ans = Math.min(ans, zero);
+                    ans = Math.min(ans, n - zero + 2);
+                } else {
+                    ans = Math.min(ans, zero + 2);
+                    ans = Math.min(ans, n - zero);
+                }
             }
         }
-        
-        int minOps = Integer.MAX_VALUE;
-        
-        if (rightIncreasing) {
-            minOps = Math.min(minOps, zero);
-            minOps = Math.min(minOps, n - zero + 2);
-        }
-        
-        if (leftIncreasing) {
-            minOps = Math.min(minOps, zero + 2);
-            minOps = Math.min(minOps, n - zero);
-        }
-        
-        return minOps == Integer.MAX_VALUE ? -1 : minOps;
+
+        return ans == Integer.MAX_VALUE ? -1 : ans;
     }
 }
